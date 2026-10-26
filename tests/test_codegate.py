@@ -339,6 +339,94 @@ class GateTests(unittest.TestCase):
         (self.repo / ".cache/output.txt").write_text("ignored")
         self.assertNotIn(".cache/output.txt", cg.files(self.repo))
 
+    def plugin_hook(self, command, cwd=None):
+        payload = {"hook_event_name": "PreToolUse", "cwd": str(cwd or self.repo), "tool_input": {"command": command}}
+        out = io.StringIO()
+        with patch("sys.stdin", io.StringIO(json.dumps(payload))), contextlib.redirect_stdout(out):
+            code = cg.plugin_hook()
+        return code, out.getvalue()
+
+    def test_plugin_hook_ignores_repos_without_config(self):
+        (self.repo / "codegate.toml").unlink()
+        self.assertEqual(self.plugin_hook("git commit -m x"), (0, ""))
+        with tempfile.TemporaryDirectory() as outside:
+            self.assertEqual(self.plugin_hook("git push", cwd=outside), (0, ""))
+        for raw in ("not json", "[]", '{"cwd": 5}'):
+            with patch("sys.stdin", io.StringIO(raw)), contextlib.redirect_stdout(io.StringIO()) as out:
+                self.assertEqual(cg.plugin_hook(), 0)
+            self.assertEqual(out.getvalue(), "")
+
+    def test_plugin_hook_requires_local_opt_in(self):
+        self.write_config([sys.executable, "-c", "raise SystemExit(1)"])
+        self.assertEqual(self.plugin_hook("git push"), (0, ""))
+
+    def test_plugin_hook_gates_opted_in_repo(self):
+        self.write_config([sys.executable, "-c", "raise SystemExit(1)"])
+        self.install()
+        code, out = self.plugin_hook("git push")
+        self.assertEqual(code, 0)
+        self.assertEqual(json.loads(out)["hookSpecificOutput"]["permissionDecision"], "deny")
+        (self.repo / "sub").mkdir()
+        self.assertIn("deny", self.plugin_hook("git push", cwd=self.repo / "sub")[1])
+        self.assertEqual(self.plugin_hook("ls"), (0, ""))
+        self.write_config()
+        self.assertEqual(self.plugin_hook("git push"), (0, ""))
+
+    def test_plugin_hook_defers_to_local_install(self):
+        self.write_config([sys.executable, "-c", "raise SystemExit(1)"])
+        self.install(claude=True)
+        self.assertEqual(self.plugin_hook("git push"), (0, ""))
+
+    def test_mcp_starts_outside_repository(self):
+        requests = [
+            {"jsonrpc": "2.0", "id": 1, "method": "tools/list"},
+            {"jsonrpc": "2.0", "id": 2, "method": "tools/call", "params": {"name": "codegate_check", "arguments": {}}},
+        ]
+        with tempfile.TemporaryDirectory() as outside:
+            result = subprocess.run([sys.executable, str(Path(cg.__file__)), "mcp"], cwd=outside, input="\n".join(map(json.dumps, requests)) + "\n", capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        messages = [json.loads(line) for line in result.stdout.splitlines()]
+        self.assertEqual(messages[0]["result"]["tools"][0]["name"], "codegate_check")
+        self.assertIn("Git failed", messages[1]["error"]["message"])
+
+    def test_mcp_path_argument(self):
+        def call(arguments, *flags):
+            requests = [{"jsonrpc": "2.0", "id": 1, "method": "tools/call", "params": {"name": "codegate_check", "arguments": arguments}}]
+            with tempfile.TemporaryDirectory() as outside:
+                result = subprocess.run([sys.executable, str(Path(cg.__file__)), "mcp", *flags], cwd=outside, input=json.dumps(requests[0]) + "\n", capture_output=True, text=True)
+            return json.loads(result.stdout)
+        self.assertFalse(call({"path": str(self.repo)}, "--require-path")["result"]["isError"])
+        self.assertIn("Pass path", call({}, "--require-path")["error"]["message"])
+        self.assertIn("absolute", call({"path": "."})["error"]["message"])
+        self.assertIn("Unknown tool", call({"path": str(self.repo), "extra": 1})["error"]["message"])
+
+    def test_plugin_manifests(self):
+        root = Path(cg.__file__).resolve().parent
+        claude = json.loads((root / ".claude-plugin/plugin.json").read_text())
+        codex = json.loads((root / ".codex-plugin/plugin.json").read_text())
+        self.assertEqual(claude["version"], cg.VERSION)
+        self.assertEqual(codex["version"], cg.VERSION)
+        for market in (".claude-plugin/marketplace.json", ".agents/plugins/marketplace.json"):
+            self.assertEqual([p["name"] for p in json.loads((root / market).read_text())["plugins"]], ["codegate"])
+        handler = json.loads((root / "hooks/hooks.json").read_text())["hooks"]["PreToolUse"][0]["hooks"][0]
+        self.assertTrue(handler["command"].endswith("/scripts/codegate\" hook plugin"))
+        self.assertTrue(os.access(root / "scripts/codegate", os.X_OK))
+        for key in ("skills", "hooks", "mcpServers"):
+            self.assertTrue((root / codex[key]).exists(), key)
+        for key in ("composerIcon", "logo"):
+            self.assertTrue((root / codex["interface"][key]).is_file(), key)
+        self.assertEqual((root / "codegate.py").read_bytes(), (root / ".codegate/runner.py").read_bytes())
+
+    def test_plugin_launcher_hook(self):
+        root = Path(cg.__file__).resolve().parent
+        self.write_config([sys.executable, "-c", "raise SystemExit(1)"])
+        self.install()
+        payload = json.dumps({"hook_event_name": "PreToolUse", "cwd": str(self.repo), "tool_input": {"command": "git commit -m x"}})
+        command = json.loads((root / "hooks/hooks.json").read_text())["hooks"]["PreToolUse"][0]["hooks"][0]["command"]
+        result = subprocess.run(["sh", "-c", command], input=payload, capture_output=True, text=True, env={**os.environ, "CLAUDE_PLUGIN_ROOT": str(root)})
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(json.loads(result.stdout)["hookSpecificOutput"]["permissionDecision"], "deny")
+
 
 if __name__ == "__main__":
     unittest.main()

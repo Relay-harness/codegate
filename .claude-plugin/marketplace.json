@@ -1,0 +1,13 @@
+{
+  "name": "codegate",
+  "owner": { "name": "CodeGate contributors", "url": "https://github.com/Relay-harness/codegate" },
+  "description": "Local quality gates for AI-assisted shipping.",
+  "plugins": [
+    {
+      "name": "codegate",
+      "source": "./",
+      "description": "Blocks commit, push and PR commands until the repository's configured checks pass.",
+      "category": "development"
+    }
+  ]
+}

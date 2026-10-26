@@ -1,0 +1,27 @@
+{
+  "name": "codegate",
+  "version": "0.1.0",
+  "description": "Run your project's own tests, lint and type checks before Codex commits, pushes or opens a PR. Opt in per repository with codegate.toml.",
+  "author": { "name": "CodeGate contributors", "url": "https://github.com/Relay-harness/codegate" },
+  "homepage": "https://relay-harness.github.io/codegate/",
+  "repository": "https://github.com/Relay-harness/codegate",
+  "license": "MIT",
+  "keywords": ["quality-gate", "git-hooks", "tests", "ci"],
+  "skills": "./skills/",
+  "hooks": "./hooks/hooks.json",
+  "mcpServers": "./.codex-plugin/mcp.json",
+  "interface": {
+    "displayName": "CodeGate",
+    "shortDescription": "Your tests decide when code ships",
+    "longDescription": "CodeGate runs the checks your repository declares in codegate.toml (tests, lint, types, secret patterns) before commit, push and PR commands, and explains what to fix when they fail. Repositories without codegate.toml are left alone. Local only: no API key, no second model.",
+    "developerName": "CodeGate contributors",
+    "category": "Developer Tools",
+    "capabilities": [],
+    "websiteURL": "https://relay-harness.github.io/codegate/",
+    "supportURL": "https://github.com/Relay-harness/codegate/issues",
+    "brandColor": "#16a34a",
+    "composerIcon": "./assets/icon.png",
+    "logo": "./assets/logo.png",
+    "defaultPrompt": "Run CodeGate on this repository and fix anything it blocks."
+  }
+}
