@@ -1,0 +1,10 @@
+#!/bin/sh
+# Plugin launcher: run the bundled CodeGate with the first Python 3.11+ (tomllib) on PATH.
+root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+for py in python3.14 python3.13 python3.12 python3.11 python3; do
+  if command -v "$py" >/dev/null 2>&1 && "$py" -c 'import sys; sys.exit(sys.version_info < (3, 11))' 2>/dev/null; then
+    exec "$py" "$root/codegate.py" "$@"
+  fi
+done
+echo "CodeGate: Python 3.11+ is required on PATH" >&2
+exit 1
