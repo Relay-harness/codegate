@@ -1,0 +1,39 @@
+{
+  "name": "codegate",
+  "version": "0.1.1",
+  "description": "Run configured repository checks on demand and install Git hooks per repository.",
+  "author": {
+    "name": "Sathwik R",
+    "url": "https://github.com/Relay-harness/codegate"
+  },
+  "homepage": "https://relay-harness.github.io/codegate/",
+  "repository": "https://github.com/Relay-harness/codegate",
+  "license": "MIT",
+  "keywords": [
+    "quality-gate",
+    "git-hooks",
+    "tests",
+    "ci"
+  ],
+  "skills": "./skills/",
+  "mcpServers": "./.codex-plugin/mcp.json",
+  "interface": {
+    "displayName": "CodeGate",
+    "shortDescription": "Checks before code ships",
+    "longDescription": "CodeGate runs the tests, lint and type checks declared in codegate.toml for a local Git repository and reports what failed. Set up repositories individually, run checks on demand, and use Git hooks to check ordinary commits and pushes. Requires Python 3.11+ and a local desktop Codex thread with repository access. No API key or paid account is required. Configured commands run with your local permissions and can access the network. A passing check does not prove the code is bug-free, and local hooks can be bypassed; use required CI checks for server-side enforcement.",
+    "developerName": "Sathwik R",
+    "category": "Developer Tools",
+    "capabilities": [],
+    "websiteURL": "https://relay-harness.github.io/codegate/",
+    "supportURL": "https://github.com/Relay-harness/codegate/issues",
+    "brandColor": "#16a34a",
+    "composerIcon": "./assets/icon.png",
+    "logo": "./assets/logo.png",
+    "defaultPrompt": [
+      "Set up CodeGate in this repository.",
+      "Run CodeGate and explain any failing checks.",
+      "Check this repository before I commit."
+    ]
+  },
+  "requires_local_executor": true
+}
