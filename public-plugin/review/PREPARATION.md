@@ -10,15 +10,14 @@ This separate directory edition excludes bundled agent lifecycle hooks. Reposito
 
 CodeGate — Checks before code ships. Developer Tools. Runs configured local repository tests, lint and types and explains failures. Requires Python 3.11+, Git and a local desktop thread. Commands run with the user's permissions; a passing result is not proof of bug-free code.
 
-CodeGate uses its own dedicated privacy and terms pages at docs/privacy.html and docs/terms.html in this repository. They describe the local runner, MCP output, GitHub-hosted support, and MIT license. The creator confirmed GitHub-only support and approved sathwik07@scriptonia.dev as the published privacy contact. The listing will use these CodeGate pages after deployment and URL verification.
+CodeGate uses its own dedicated privacy and terms pages at docs/privacy.html and docs/terms.html in this repository. They describe the local runner, MCP output, GitHub-hosted support, and MIT license. The creator confirmed GitHub-only support and approved sathwik07@scriptonia.dev as the published privacy contact. Both pages are deployed and were verified with HTTP 200 responses, the correct CodeGate content and the confirmed privacy contact. The root and compatibility manifests use these CodeGate URLs.
 
 ## Remaining steps, in order
 
-1. Publish the dedicated CodeGate privacy and terms pages. Insert their verified HTTPS URLs into plugin.json and synchronize the compatibility manifest.
-2. Install this exact directory edition in a local desktop thread. Verify setup, Git hooks, and actual MCP use. The private plugin currently installed is a different edition.
-3. Record the desktop walkthrough below, host it at an accessible link, play it back, then set review.demo_recording_url. The script below is not a recording.
-4. Rebuild and inspect the final ZIP. Select the intended verified organization and publisher in the submission portal, confirm local-MCP eligibility, and upload the draft. Inspect imported metadata and run applicable cases against that saved version.
-5. The authorized developer completes the portal's legal/policy attestations and any required scans. Submit for review. Publish only after approval.
+1. Install this exact directory edition in a local desktop thread. Verify setup, Git hooks, and actual MCP use. The private plugin currently installed is a different edition.
+2. Record the desktop walkthrough below, host it at an accessible link, play it back, then set review.demo_recording_url. The script below is not a recording.
+3. Rebuild and inspect the final ZIP. Select the intended verified organization and publisher in the submission portal, confirm local-MCP eligibility, and upload the draft. Inspect imported metadata and run applicable cases against that saved version.
+4. The authorized developer completes the portal's legal/policy attestations and any required scans. Submit for review. Publish only after approval.
 
 The available account plugin tools create/update private plugins; they do not submit or publish a public listing. The originating local browser connection was unavailable in this session, and no video-recording tool was exposed. GitHub access is now connected for source publication.
 
@@ -46,3 +45,10 @@ For the demo, an accessible local desktop setup is required. Browser screenshots
 - https://developers.openai.com/plugins/deploy/submission — bundled lifecycle hooks are ineligible; upload, review and publication are separate.
 
 The source includes five positive and three negative review cases, release notes, explicit free-commerce metadata and unrestricted country targeting. No placeholder policy or video URL and no unsupported legal attestation has been inserted.
+
+## Verified CodeGate policy URLs
+
+- Privacy: https://relay-harness.github.io/codegate/privacy.html
+- Terms: https://relay-harness.github.io/codegate/terms.html
+
+No Relay policy is used. Both pages were verified after successful GitHub Pages deployment.

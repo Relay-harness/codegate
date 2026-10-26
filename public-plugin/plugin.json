@@ -34,7 +34,9 @@
           "Set up CodeGate in this repository.",
           "Run CodeGate and explain any failing checks.",
           "Check this repository before I commit."
-        ]
+        ],
+        "privacyPolicyURL": "https://relay-harness.github.io/codegate/privacy.html",
+        "termsOfServiceURL": "https://relay-harness.github.io/codegate/terms.html"
       },
       "requires_local_executor": true,
       "publication": {

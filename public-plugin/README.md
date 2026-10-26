@@ -10,4 +10,7 @@ Source: https://github.com/Relay-harness/codegate
 Support: https://github.com/Relay-harness/codegate/issues
 License: LICENSE
 
-Public submission is incomplete: deployment and verification of the dedicated CodeGate privacy/terms pages, a verified desktop recording, target-host checks, and final portal checks/attestations remain. Local MCP eligibility was confirmed by the creator and must be verified for the submitting organization in the portal. See review/PREPARATION.md.
+Public submission is incomplete: a verified desktop recording, target-host checks, and final portal checks/attestations remain. Local MCP eligibility was confirmed by the creator and must be verified for the submitting organization in the portal. See review/PREPARATION.md.
+
+Privacy: https://relay-harness.github.io/codegate/privacy.html
+Terms: https://relay-harness.github.io/codegate/terms.html
