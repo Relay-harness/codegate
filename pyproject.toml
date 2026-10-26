@@ -1,0 +1,16 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "codegate-local"
+version = "0.1.0"
+description = "Local quality gates for AI coding and Git workflows"
+requires-python = ">=3.11"
+license = "MIT"
+
+[project.scripts]
+codegate = "codegate:main"
+
+[tool.hatch.build.targets.wheel]
+include = ["codegate.py"]

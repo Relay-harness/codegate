@@ -1,0 +1,10 @@
+version = 1
+timeout = 120
+secret_scan = true
+python_syntax = true
+ship_commands = ["npm publish"]
+
+[[checks]]
+name = "CodeGate regression suite"
+command = [".venv/bin/python", "-m", "unittest", "discover", "-s", "tests", "-v"]
+timeout = 90

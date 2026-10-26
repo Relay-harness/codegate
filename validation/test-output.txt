@@ -1,0 +1,45 @@
+test_autodetect_npm (test_codegate.GateTests.test_autodetect_npm) ... ok
+test_autodetected_python_is_portable (test_codegate.GateTests.test_autodetected_python_is_portable) ... ok
+test_bad_hook_json_denies (test_codegate.GateTests.test_bad_hook_json_denies) ... ok
+test_check_log_token_redaction (test_codegate.GateTests.test_check_log_token_redaction) ... ok
+test_claude_cd_denied (test_codegate.GateTests.test_claude_cd_denied) ... ok
+test_claude_exec_hook_fail_closed_configuration (test_codegate.GateTests.test_claude_exec_hook_fail_closed_configuration) ... ok
+test_claude_failure_denies (test_codegate.GateTests.test_claude_failure_denies) ... ok
+test_claude_merge_idempotent_uninstall_preserves_edits (test_codegate.GateTests.test_claude_merge_idempotent_uninstall_preserves_edits) ... ok
+test_claude_missing_config_denies_ship (test_codegate.GateTests.test_claude_missing_config_denies_ship) ... ok
+test_claude_nonshipping_no_decision (test_codegate.GateTests.test_claude_nonshipping_no_decision) ... ok
+test_claude_pass_does_not_grant_permissions (test_codegate.GateTests.test_claude_pass_does_not_grant_permissions) ... ok
+test_claude_stop_one_repair (test_codegate.GateTests.test_claude_stop_one_repair) ... ok
+test_command_failure (test_codegate.GateTests.test_command_failure) ... ok
+test_commit_requires_staging (test_codegate.GateTests.test_commit_requires_staging) ... ok
+test_custom_hookspath_refused_without_mutation (test_codegate.GateTests.test_custom_hookspath_refused_without_mutation) ... ok
+test_custom_ship_command (test_codegate.GateTests.test_custom_ship_command) ... ok
+test_doctor (test_codegate.GateTests.test_doctor) ... ok
+test_empty_checks_block (test_codegate.GateTests.test_empty_checks_block) ... ok
+test_existing_hooks_restored (test_codegate.GateTests.test_existing_hooks_restored) ... ok
+test_ignored_generated_files_not_counted (test_codegate.GateTests.test_ignored_generated_files_not_counted) ... ok
+test_invalid_policy_types_block (test_codegate.GateTests.test_invalid_policy_types_block) ... ok
+test_mcp_roundtrip (test_codegate.GateTests.test_mcp_roundtrip) ... ok
+test_missing_binary (test_codegate.GateTests.test_missing_binary) ... ok
+test_modified_owned_hook_is_not_overwritten (test_codegate.GateTests.test_modified_owned_hook_is_not_overwritten) ... ok
+test_mutation_invalidates (test_codegate.GateTests.test_mutation_invalidates) ... ok
+test_no_config_blocks (test_codegate.GateTests.test_no_config_blocks) ... ok
+test_nonhead_push_rejected (test_codegate.GateTests.test_nonhead_push_rejected) ... ok
+test_nonzero_timeout_rejected (test_codegate.GateTests.test_nonzero_timeout_rejected) ... ok
+test_output_budget (test_codegate.GateTests.test_output_budget) ... ok
+test_pass (test_codegate.GateTests.test_pass) ... ok
+test_prior_hook_failure_propagates (test_codegate.GateTests.test_prior_hook_failure_propagates) ... ok
+test_real_git_commit_pass_and_failure (test_codegate.GateTests.test_real_git_commit_pass_and_failure) ... ok
+test_real_git_push_to_local_bare (test_codegate.GateTests.test_real_git_push_to_local_bare) ... ok
+test_recursive_gate_blocks (test_codegate.GateTests.test_recursive_gate_blocks) ... ok
+test_secret_is_redacted (test_codegate.GateTests.test_secret_is_redacted) ... ok
+test_shell_string_rejected (test_codegate.GateTests.test_shell_string_rejected) ... ok
+test_symlink_hook_refused (test_codegate.GateTests.test_symlink_hook_refused) ... ok
+test_syntax (test_codegate.GateTests.test_syntax) ... ok
+test_timeout (test_codegate.GateTests.test_timeout) ... ok
+test_untracked_blocks_commit (test_codegate.GateTests.test_untracked_blocks_commit) ... ok
+
+----------------------------------------------------------------------
+Ran 40 tests in 11.379s
+
+OK

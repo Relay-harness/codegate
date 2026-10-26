@@ -1,0 +1,225 @@
+
+====================================================================
+Create isolated Git repository
+$ git init -q
+
+EXIT CODE: 0
+
+====================================================================
+Set demo-only identity
+$ git config user.name CodeGate Demo
+
+EXIT CODE: 0
+
+====================================================================
+Set demo-only email
+$ git config user.email demo@example.invalid
+
+EXIT CODE: 0
+
+====================================================================
+Install real Claude and Git hooks
+$ /path/to/codegate/.venv/bin/python /path/to/codegate/codegate.py --repo /tmp/codegate-live-demo init --claude --git
+CodeGate installed. Review codegate.toml, then stage .codegate/runner.py and codegate.toml.
+No dependencies were installed in your project. Existing Git hooks are chained after the gate.
+Claude Code 2.1.295+ is required for fail-closed onFailure handling. Reload hooks and verify with /hooks.
+EXIT CODE: 0
+
+====================================================================
+Verify installed integration
+$ /path/to/codegate/.venv/bin/python /path/to/codegate/codegate.py --repo /tmp/codegate-live-demo doctor
+OK   configuration
+OK   calculator tests executable
+OK   pre-commit installed
+OK   pre-push installed
+OK   Claude Bash hook installed
+Doctor checks setup, not test correctness. Run codegate check for quality results.
+EXIT CODE: 0
+
+====================================================================
+Stage passing code
+$ git add .
+
+EXIT CODE: 0
+
+====================================================================
+GOOD CODE: commit succeeds through real pre-commit hook
+$ git commit -m passing calculator
+[main (root-commit) a547793] passing calculator
+ 5 files changed, 676 insertions(+)
+ create mode 100644 .codegate/runner.py
+ create mode 100644 .gitignore
+ create mode 100644 calculator.py
+ create mode 100644 codegate.toml
+ create mode 100644 tests/test_calculator.py
+CodeGate: PASS
+  PASS built-in checks
+  PASS calculator tests
+EXIT CODE: 0
+
+====================================================================
+Record initial commit
+$ git rev-parse HEAD
+a54779378832eb14a378ceda3f04c9e27e97508f
+EXIT CODE: 0
+
+====================================================================
+Create local-only bare remote
+$ git init --bare -q /tmp/codegate-live-demo-remote.git
+
+EXIT CODE: 0
+
+====================================================================
+Set local-only remote
+$ git remote add origin /tmp/codegate-live-demo-remote.git
+
+EXIT CODE: 0
+
+====================================================================
+GOOD CODE: push succeeds through real pre-push hook
+$ git push origin HEAD:refs/heads/main
+CodeGate: PASS
+  PASS built-in checks
+  PASS calculator tests
+To /tmp/codegate-live-demo-remote.git
+ * [new branch]      HEAD -> main
+EXIT CODE: 0
+
+====================================================================
+Stage a real semantic bug (valid syntax, wrong arithmetic)
+$ git add calculator.py
+
+EXIT CODE: 0
+
+====================================================================
+BAD CODE: check fails with assertion -1 != 5
+$ /path/to/codegate/.venv/bin/python /path/to/codegate/codegate.py --repo /tmp/codegate-live-demo check
+CodeGate: BLOCKED
+  PASS built-in checks
+  FAIL calculator tests
+test_add (test_calculator.CalculatorTests.test_add) ... FAIL
+test_demo_environment (test_calculator.CalculatorTests.test_demo_environment) ... ok
+
+======================================================================
+FAIL: test_add (test_calculator.CalculatorTests.test_add)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/private/tmp/codegate-live-demo/tests/test_calculator.py", line 7, in test_add
+    self.assertEqual(add(2, 3), 5)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+AssertionError: -1 != 5
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.000s
+
+FAILED (failures=1)
+
+Fix the failures, then rerun the same action. Do not bypass the gate.
+EXIT CODE: 1
+
+====================================================================
+CLAUDE HOOK: replay documented payload, expect permissionDecision deny
+$ /path/to/codegate/.venv/bin/python /tmp/codegate-live-demo/.codegate/runner.py --repo /tmp/codegate-live-demo hook claude
+{"hookSpecificOutput": {"hookEventName": "PreToolUse", "permissionDecision": "deny", "permissionDecisionReason": "CodeGate: BLOCKED\n  PASS built-in checks\n  FAIL calculator tests\ntest_add (test_calculator.CalculatorTests.test_add) ... FAIL\ntest_demo_environment (test_calculator.CalculatorTests.test_demo_environment) ... ok\n\n======================================================================\nFAIL: test_add (test_calculator.CalculatorTests.test_add)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/private/tmp/codegate-live-demo/tests/test_calculator.py\", line 7, in test_add\n    self.assertEqual(add(2, 3), 5)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^\nAssertionError: -1 != 5\n\n----------------------------------------------------------------------\nRan 2 tests in 0.000s\n\nFAILED (failures=1)\n\nFix the failures, then rerun the same action. Do not bypass the gate."}}
+EXIT CODE: 0
+
+====================================================================
+BAD CODE: actual Git commit is blocked
+$ git commit -m ship buggy calculator
+CodeGate: BLOCKED
+  PASS built-in checks
+  FAIL calculator tests
+test_add (test_calculator.CalculatorTests.test_add) ... FAIL
+test_demo_environment (test_calculator.CalculatorTests.test_demo_environment) ... ok
+
+======================================================================
+FAIL: test_add (test_calculator.CalculatorTests.test_add)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/private/tmp/codegate-live-demo/tests/test_calculator.py", line 7, in test_add
+    self.assertEqual(add(2, 3), 5)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+AssertionError: -1 != 5
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.000s
+
+FAILED (failures=1)
+
+Fix the failures, then rerun the same action. Do not bypass the gate.
+EXIT CODE: 1
+
+====================================================================
+Confirm no buggy commit was created
+$ git rev-parse HEAD
+a54779378832eb14a378ceda3f04c9e27e97508f
+EXIT CODE: 0
+
+====================================================================
+Stage fixed implementation
+$ git add calculator.py
+
+EXIT CODE: 0
+
+====================================================================
+FIXED CODE: commit succeeds again
+$ git commit -m fix calculator regression
+[main 7045c1a] fix calculator regression
+ 1 file changed, 1 insertion(+)
+CodeGate: PASS
+  PASS built-in checks
+  PASS calculator tests
+EXIT CODE: 0
+
+====================================================================
+FIXED CODE: push succeeds again
+$ git push origin HEAD:refs/heads/main
+CodeGate: PASS
+  PASS built-in checks
+  PASS calculator tests
+To /tmp/codegate-live-demo-remote.git
+   a547793..7045c1a  HEAD -> main
+EXIT CODE: 0
+
+====================================================================
+Verify clean tree before push-denial test
+$ git status --porcelain
+
+EXIT CODE: 0
+
+====================================================================
+PUSH FAILURE: a failing test blocks a real push even with a clean tree
+$ git push origin HEAD:refs/heads/blocked-demo
+CodeGate: BLOCKED
+  PASS built-in checks
+  FAIL calculator tests
+test_add (test_calculator.CalculatorTests.test_add) ... ok
+test_demo_environment (test_calculator.CalculatorTests.test_demo_environment) ... FAIL
+
+======================================================================
+FAIL: test_demo_environment (test_calculator.CalculatorTests.test_demo_environment)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/private/tmp/codegate-live-demo/tests/test_calculator.py", line 9, in test_demo_environment
+    self.assertNotEqual(os.environ.get("DEMO_FORCE_FAILURE"), "1", "Deliberate demo check failure")
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: '1' == '1' : Deliberate demo check failure
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.001s
+
+FAILED (failures=1)
+
+Fix the failures, then rerun the same action. Do not bypass the gate.
+error: failed to push some refs to '/tmp/codegate-live-demo-remote.git'
+EXIT CODE: 1
+
+====================================================================
+Normal check is green again
+$ /path/to/codegate/.venv/bin/python /path/to/codegate/codegate.py --repo /tmp/codegate-live-demo check
+CodeGate: PASS
+  PASS built-in checks
+  PASS calculator tests
+EXIT CODE: 0
+
+DEMO PASSED: good commit/push allowed; buggy commit denied; hook denied; fixed commit/push allowed; failing-test push denied. All pushes stayed local.
