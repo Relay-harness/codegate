@@ -11,8 +11,9 @@ One importable/standalone Python module; no runtime dependencies.
 - `check`: run built-ins and configured checks; reject changed inputs; persist a local diagnostic report. No success cache.
 - `claude_hook`: documented PreToolUse JSON denial contract. Pattern detection is intentionally best-effort; it preserves normal permissions on success. Optional Stop feedback avoids repeated blocking loops.
 - `git_hook`: stage/cleanliness rules, validate HEAD-only push refs, run checks, chain prior executable hooks with original arguments and push stdin.
+- `plugin_hook`: entry point for the Claude Code/Codex plugin hook. It resolves the repository from the payload `cwd` and passes through unless the checkout opted in (`codegate.toml` plus a local install receipt, so a cloned policy alone runs nothing) and no project-local Claude hook is installed. Errors before opt-in pass through; after opt-in, the `claude_hook` deny contract applies.
 - `install/uninstall`: local settings merge, per-repo receipts/backups, unchanged-wrapper verification before restoration, no global Git configuration.
-- `mcp_server`: synchronous newline JSON-RPC MCP 2024-11-05 tool server. A tool result is advisory, not authorization.
+- `mcp_server`: synchronous newline JSON-RPC MCP 2024-11-05 tool server. The repository is resolved on each call, from an optional absolute `path` argument (required with `--require-path`). A tool result is advisory, not authorization.
 
 ## Why not Harbor or a second LLM?
 

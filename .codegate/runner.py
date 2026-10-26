@@ -296,9 +296,9 @@ def shipping_command(command, cfg):
     return None
 
 
-def claude_hook(repo):
+def claude_hook(repo, raw=None):
     try:
-        payload = json.load(sys.stdin)
+        payload = json.load(sys.stdin) if raw is None else json.loads(raw)
         if not isinstance(payload, dict):
             raise GateError("Hook payload must be an object")
         event = payload.get("hook_event_name", "PreToolUse")
@@ -339,6 +339,23 @@ def claude_hook(repo):
     except (ValueError, GateError, OSError, subprocess.SubprocessError) as exc:
         print(json.dumps({"hookSpecificOutput": {"hookEventName": "PreToolUse", "permissionDecision": "deny", "permissionDecisionReason": str(exc)}}))
         return 0
+
+
+def plugin_hook():
+    """Claude Code/Codex plugin hook. Plugins load in every project, so act only where this checkout opted in:
+    codegate.toml plus a local install receipt, so a cloned repository cannot make the plugin run its commands."""
+    raw = sys.stdin.read()
+    try:
+        payload = json.loads(raw)
+        repo = repository(payload.get("cwd") or os.getcwd())
+        receipt = state_dir(repo) / "install.json"
+        if not (repo / "codegate.toml").is_file() or not receipt.is_file():
+            return 0
+        if json.loads(receipt.read_text()).get("claude"):
+            return 0  # A project-local `install --claude` hook already gates this repository.
+    except (ValueError, AttributeError, TypeError, GateError, OSError, subprocess.SubprocessError):
+        return 0  # Not a Git repository or not opted in: leave the command alone.
+    return claude_hook(repo, raw)
 
 
 def detect_checks(repo):
@@ -539,8 +556,9 @@ def git_hook(repo, name, args):
     return 0
 
 
-def mcp_server(repo):
-    """Minimal JSON-RPC MCP stdio server. Check is read/exec, not a shipping authorization."""
+def mcp_server(path, require_path=False):
+    """Minimal JSON-RPC MCP stdio server. Check is read/exec, not a shipping authorization.
+    The repository is resolved per call so a plugin-launched server starts outside Git too."""
     for line in sys.stdin:
         request = None
         try:
@@ -556,12 +574,19 @@ def mcp_server(repo):
             elif method == "ping":
                 result = {}
             elif method == "tools/list":
-                result = {"tools": [{"name": "codegate_check", "description": "Run this repository's configured quality checks. Executes project commands with host permissions; not a sandbox or proof of bug-free code.", "inputSchema": {"type": "object", "properties": {}, "additionalProperties": False}}]}
+                where = "Required." if require_path else "Defaults to the server's working directory."
+                result = {"tools": [{"name": "codegate_check", "description": "Run a repository's configured CodeGate quality checks (codegate.toml). Executes project commands with host permissions; not a sandbox or proof of bug-free code.", "inputSchema": {"type": "object", "properties": {"path": {"type": "string", "description": "Absolute path inside the Git repository to check. " + where}}, "additionalProperties": False}}]}
             elif method == "tools/call":
                 params = request.get("params", {})
-                if params.get("name") != "codegate_check" or params.get("arguments", {}) != {}:
+                arguments = params.get("arguments") or {}
+                if params.get("name") != "codegate_check" or not isinstance(arguments, dict) or set(arguments) - {"path"} or not isinstance(arguments.get("path", ""), str):
                     raise GateError("Unknown tool or arguments")
-                report = check(repo)
+                target = arguments.get("path") or (None if require_path else path)
+                if not target:
+                    raise GateError("Pass path: an absolute path inside the Git repository to check")
+                if "path" in arguments and not Path(target).is_absolute():
+                    raise GateError("path must be absolute")
+                report = check(repository(target))
                 result = {"content": [{"type": "text", "text": format_report(report)}], "isError": not report["ok"]}
             else:
                 print(json.dumps({"jsonrpc": "2.0", "id": rid, "error": {"code": -32601, "message": "Method not found"}}), flush=True)
@@ -614,14 +639,21 @@ def main():
     cmd.add_argument("--mode", choices=["worktree", "commit", "push"], default="worktree")
     sub.add_parser("uninstall")
     sub.add_parser("doctor")
-    sub.add_parser("mcp")
+    cmd = sub.add_parser("mcp")
+    cmd.add_argument("--require-path", action="store_true", help="Plugin hosts that start servers outside the project")
     sub.add_parser("mcp-config")
     cmd = sub.add_parser("hook")
-    cmd.add_argument("client", choices=["claude"])
+    cmd.add_argument("client", choices=["claude", "plugin"])
     cmd = sub.add_parser("git-hook")
     cmd.add_argument("kind", choices=["pre-commit", "pre-push"])
     cmd.add_argument("hook_args", nargs="*")
     args = parser.parse_args()
+    # Plugin entry points can start outside a Git repository; they resolve it themselves.
+    if args.action == "hook" and args.client == "plugin":
+        return plugin_hook()
+    if args.action == "mcp":
+        mcp_server(args.repo, args.require_path)
+        return 0
     try:
         repo = repository(args.repo)
         if args.action in ("init", "install"):
@@ -640,9 +672,6 @@ def main():
             return claude_hook(repo)
         if args.action == "git-hook":
             return git_hook(repo, args.kind, args.hook_args)
-        if args.action == "mcp":
-            mcp_server(repo)
-            return 0
         if args.action == "mcp-config":
             print(json.dumps({"mcpServers": {"codegate": {"command": sys.executable, "args": [str(repo / ".codegate/runner.py"), "--repo", str(repo), "mcp"]}}}, indent=2))
             return 0

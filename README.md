@@ -2,7 +2,7 @@
 
 **Let AI write code. Make your checks approve shipping.**
 
-A local quality gate for Claude Code and ordinary Git workflows. Python 3.11+, macOS/Linux, no runtime dependencies. This is a v0.1 open-source project, not a published marketplace plugin.
+A local quality gate for Claude Code, Codex and ordinary Git workflows. Python 3.11+, macOS/Linux, no runtime dependencies. This is a v0.1 open-source project. It ships as a Claude Code plugin, a Codex plugin (installable from the ChatGPT desktop app) and a plain CLI. Landing page: [`docs/index.html`](docs/index.html).
 
 ```text
 Claude Code proposes commit/push
@@ -18,6 +18,39 @@ Claude Code proposes commit/push
 ```
 
 It does **not** prove code is bug-free, understand every business requirement, or replace code review. It enforces the checks your project defines. It does not need Harbor, REA, an API key, or a second model.
+
+## Plugins
+
+This repository is also a plugin marketplace for Claude Code and for Codex. Both plugins bundle the same pieces:
+
+- a `PreToolUse` Bash hook (`hooks/hooks.json`) that gates shipping commands,
+- the `codegate_check` MCP tool,
+- `check` and `setup` skills (`skills/`).
+
+Plugins load in every project. The plugin hook (`codegate hook plugin`) therefore does nothing unless the current checkout has opted in. That takes a `codegate.toml` plus a local install receipt in `.git/codegate/`, written by `init`/`install` (or `/codegate:setup`) on your machine. A cloned repository that only ships a `codegate.toml` cannot make the plugin run its commands. Teammates opt in with `python3 .codegate/runner.py install --git`. It also steps aside where a project-local `codegate install --claude` hook already exists, so checks never run twice. Unlike the project-local hook, the plugin hook does not set `onFailure: block`. If Python 3.11+ is missing, it fails open rather than blocking every Bash call in every project. Git hooks and CI remain the enforcement layers.
+
+### Claude Code
+
+```text
+/plugin marketplace add Relay-harness/codegate
+/plugin install codegate@codegate
+```
+
+Then, in the repository you want to protect, run `/codegate:setup`. It runs `init --git`: it writes `codegate.toml`, vendors `.codegate/runner.py` and installs Git hooks. It skips `--claude`, because the plugin provides that hook. Use `/codegate:check` to run the gate on demand. After setup, `codegate doctor` reports `WARN Claude Bash hook installed`. That is expected when the hook comes from the plugin.
+
+### Codex and the ChatGPT desktop app
+
+```bash
+codex plugin marketplace add Relay-harness/codegate
+```
+
+1. Restart the ChatGPT desktop app, open the Plugins directory and install `codegate`.
+2. Review and trust its hook with `/hooks`. Codex does not run plugin hooks until they are trusted.
+3. Opt a repository in with `uvx --from git+https://github.com/Relay-harness/codegate.git codegate init --git`, or ask Codex to use the `setup` skill.
+
+The Codex manifest is `.codex-plugin/plugin.json` and the marketplace is `.agents/plugins/marketplace.json`. Codex starts plugin MCP servers from the plugin directory, not from your project. Its MCP config therefore runs the server with `--require-path`, and `codegate_check` must be given the repository's absolute `path`.
+
+This works in local Codex threads only. The ChatGPT web app cannot reach your files or run your tests, so CodeGate cannot gate code written there. Use Git hooks and required CI for that code.
 
 ## Quick start
 
@@ -140,9 +173,9 @@ For a client supporting **local stdio MCP servers**, print its configuration:
 codegate mcp-config
 ```
 
-Merge the printed `mcpServers` entry into that client's configuration. It exposes `codegate_check`. The minimal server implements initialize, ping, tools/list and tools/call using MCP protocol version 2024-11-05. Protocol behavior is covered by automated JSON-RPC tests; live client onboarding is not yet end-to-end tested.
+Merge the printed `mcpServers` entry into that client's configuration. It exposes `codegate_check`. Its optional `path` argument (an absolute path inside a Git repository) defaults to the repository given with `--repo`, or to the server's working directory if none was given. `codegate mcp --require-path` makes the argument mandatory. Codex users can also register the server with `codex mcp add codegate -- python3 /path/to/repo/.codegate/runner.py --repo /path/to/repo mcp`. The minimal server implements initialize, ping, tools/list and tools/call using MCP protocol version 2024-11-05. Protocol behavior is covered by automated JSON-RPC tests; live client onboarding is not yet end-to-end tested.
 
-MCP lets an assistant **ask** for results; it does not force it to call the tool or block shipping. Use Git hooks and required CI for enforcement. ChatGPT web connectors generally cannot run this local stdio server directly; no claim of a universal ChatGPT plugin is made.
+MCP lets an assistant **ask** for results; it does not force it to call the tool or block shipping. Use Git hooks and required CI for enforcement. ChatGPT web connectors cannot run this local stdio server directly. The Codex plugin above covers the ChatGPT desktop app; no claim of a universal ChatGPT plugin is made.
 
 ## CI: enforce where local hooks can be bypassed
 

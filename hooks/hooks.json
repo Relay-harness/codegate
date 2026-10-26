@@ -1,0 +1,17 @@
+{
+  "description": "CodeGate: gate shipping Bash commands in repositories opted in on this machine (codegate.toml plus `codegate init`). Other repositories pass through untouched.",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/codegate\" hook plugin",
+            "timeout": 615
+          }
+        ]
+      }
+    ]
+  }
+}
