@@ -1,16 +1,15 @@
-# CodeGate — directory edition (draft)
+# CodeGate — public desktop skills edition
 
-Run a local Git repository's configured tests, lint and type checks and report why a gate failed. Requires Python 3.11+, Git, and a local desktop Codex thread with access to the repository. This free, MIT-licensed plugin requires no API key or account.
+CodeGate's setup and check skills run its bundled CLI in a local desktop thread. They inspect the selected Git repository, configure its tests/lint/types, explain gate failures, and can install repository Git pre-commit/pre-push hooks. Requires Python 3.11+, Git, and local command execution with repository access.
 
-Ask “Set up CodeGate in this repository” to create codegate.toml, vendor the runner, and install repository-local Git pre-commit/pre-push hooks. Review the detected project commands before running them. Ask “Run CodeGate and explain failing checks” to use the codegate_check tool with the repository's absolute path.
+Ask “Set up CodeGate in this repository” and review the detected project commands. Then ask “Run CodeGate and explain failing checks.” This public edition declares no MCP server and bundles no agent lifecycle hook. The original repository marketplace distribution and existing private plugin retain their MCP integration.
 
-This directory edition excludes bundled agent lifecycle hooks. Git hooks must be installed per repository. Local checks are not a sandbox; configured commands can change files or access the network. A pass establishes only that the configured checks passed. Use trusted required CI for enforcement against bypass.
+Configured checks execute with the user's permissions and environment and may modify files or contact services. A pass means the configured checks passed at that time. Use code review and trusted required CI where enforcement must survive local bypass.
 
 Source: https://github.com/Relay-harness/codegate
 Support: https://github.com/Relay-harness/codegate/issues
-License: LICENSE
-
-Public submission is incomplete: a verified desktop recording, target-host checks, and final portal checks/attestations remain. Local MCP eligibility was confirmed by the creator and must be verified for the submitting organization in the portal. See review/PREPARATION.md.
-
 Privacy: https://relay-harness.github.io/codegate/privacy.html
 Terms: https://relay-harness.github.io/codegate/terms.html
+License: LICENSE
+
+See review/PREPARATION.md for validation and submission state.

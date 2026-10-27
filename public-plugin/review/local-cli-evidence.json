@@ -1,0 +1,43 @@
+{
+  "package": "0.2.0 desktop skills",
+  "scenarios": [
+    {
+      "scenario": "bundled setup on a path containing spaces",
+      "result": "Passed"
+    },
+    {
+      "scenario": "configured tests through bundled CLI",
+      "result": "Passed",
+      "output": "CodeGate: PASS\n  PASS built-in checks\n  PASS test\n"
+    },
+    {
+      "scenario": "real Git commit with installed hook and passing checks",
+      "result": "Passed"
+    },
+    {
+      "scenario": "installed Git hook blocks a real failing commit",
+      "result": "Passed"
+    },
+    {
+      "scenario": "pass",
+      "result": "Passed"
+    },
+    {
+      "scenario": "fail",
+      "result": "Passed"
+    },
+    {
+      "scenario": "syntax",
+      "result": "Passed"
+    },
+    {
+      "scenario": "no-config",
+      "result": "Passed"
+    },
+    {
+      "scenario": "path with spaces",
+      "result": "Passed"
+    }
+  ],
+  "live_desktop_conversation": "Not run in this environment"
+}
