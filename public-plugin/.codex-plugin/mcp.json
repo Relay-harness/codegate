@@ -1,9 +1,0 @@
-{
-  "mcpServers": {
-    "codegate": {
-      "command": "sh",
-      "args": ["scripts/codegate", "mcp", "--require-path"],
-      "cwd": "."
-    }
-  }
-}

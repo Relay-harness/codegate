@@ -1,7 +1,7 @@
 {
   "name": "codegate",
-  "version": "0.1.2",
-  "description": "Run configured repository checks on demand and install Git hooks per repository.",
+  "version": "0.2.0",
+  "description": "Desktop skills for setting up and running repository tests, lint and type checks with CodeGate.",
   "author": {
     "name": "Sathwik R",
     "url": "https://github.com/Relay-harness/codegate"
@@ -16,11 +16,10 @@
     "ci"
   ],
   "skills": "./skills/",
-  "mcpServers": "./.codex-plugin/mcp.json",
   "interface": {
     "displayName": "CodeGate",
     "shortDescription": "Checks before code ships",
-    "longDescription": "CodeGate runs the tests, lint and type checks declared in codegate.toml for a local Git repository and reports what failed. Set up repositories individually, run checks on demand, and use Git hooks to check ordinary commits and pushes. Requires Python 3.11+ and a local desktop Codex thread with repository access. Configured commands run with your local permissions and can access the network. A passing check does not prove the code is bug-free, and local hooks can be bypassed; use required CI checks for server-side enforcement.",
+    "longDescription": "CodeGate provides desktop skills for setting up a local Git repository and running the tests, lint and type checks declared in codegate.toml. The skills invoke the bundled CodeGate CLI and explain failures. Setup can install repository Git hooks for ordinary commits and pushes. Requires Python 3.11+, Git and a local desktop thread with command execution and repository access. Configured checks run with your local permissions and may modify files or access the network. A passing result means the configured checks passed, not that software is bug-free. Use trusted required CI for enforcement against local bypass.",
     "developerName": "Sathwik R",
     "category": "Developer Tools",
     "capabilities": [],

@@ -1,8 +1,8 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "codegate",
-  "version": "0.1.2",
-  "description": "Run your project's own tests, lint and type checks before Codex commits, pushes or opens a PR. Opt in per repository with codegate.toml.",
+  "version": "0.2.0",
+  "description": "Desktop skills for setting up and running repository tests, lint and type checks with CodeGate.",
   "author": {
     "name": "Sathwik R",
     "url": "https://github.com/Relay-harness/codegate"
@@ -21,7 +21,7 @@
       "interface": {
         "displayName": "CodeGate",
         "shortDescription": "Checks before code ships",
-        "longDescription": "CodeGate runs the tests, lint and type checks declared in codegate.toml for a local Git repository and reports what failed. Set up repositories individually, run checks on demand, and use Git hooks to check ordinary commits and pushes. Requires Python 3.11+ and a local desktop Codex thread with repository access. Configured commands run with your local permissions and can access the network. A passing check does not prove the code is bug-free, and local hooks can be bypassed; use required CI checks for server-side enforcement.",
+        "longDescription": "CodeGate provides desktop skills for setting up a local Git repository and running the tests, lint and type checks declared in codegate.toml. The skills invoke the bundled CodeGate CLI and explain failures. Setup can install repository Git hooks for ordinary commits and pushes. Requires Python 3.11+, Git and a local desktop thread with command execution and repository access. Configured checks run with your local permissions and may modify files or access the network. A passing result means the configured checks passed, not that software is bug-free. Use trusted required CI for enforcement against local bypass.",
         "developerName": "Sathwik R",
         "category": "Developer Tools",
         "capabilities": [],
@@ -40,65 +40,17 @@
       },
       "requires_local_executor": true,
       "publication": {
-        "release_notes": "Clarify the repository-checking workflow and remove redundant account language from the listing. Includes local quality checks, explicit repository Git hook setup and execution annotations.",
+        "release_notes": "Desktop-only skills edition. Setup and check invoke the bundled CLI directly, preserving local repository checks and explicit Git hook installation. This package does not register an MCP server or bundle agent lifecycle hooks.",
         "countries": []
       },
       "review": {
         "prompts": [
           "Set up CodeGate in this repository.",
           "Run the configured checks and explain any failures.",
-          "Check the repository before I commit."
+          "Check this repository before I commit."
         ],
-        "test_cases": {
-          "positive": [
-            {
-              "description": "Create the pass fixture with review/fixtures.py. Replace <FIXTURES> with the absolute fixture directory. The configured stdlib unittest suite succeeds; the repository is a Git checkout with codegate.toml.",
-              "prompt": "Run the configured quality checks in <FIXTURES>/pass and tell me the result.",
-              "tools_triggered": "codegate_check with path set to the absolute <FIXTURES>/pass directory.",
-              "expected_behavior": "The tool returns isError false and a PASS report including the configured test-suite result. Explain that the configured checks passed; do not claim the program is bug-free or that a commit happened."
-            },
-            {
-              "description": "Create the fail fixture with review/fixtures.py. Its actual unittest expectation deliberately fails against the sample function.",
-              "prompt": "Check <FIXTURES>/fail and explain why it cannot pass yet.",
-              "tools_triggered": "codegate_check with path set to the absolute <FIXTURES>/fail directory.",
-              "expected_behavior": "The tool returns isError true and a BLOCKED report with a nonzero unittest result. Explain the failing assertion using returned output. Do not weaken tests or claim success."
-            },
-            {
-              "description": "Create the syntax fixture with review/fixtures.py. app.py contains invalid Python syntax; built-in syntax checking is enabled.",
-              "prompt": "Check <FIXTURES>/syntax before I commit it.",
-              "tools_triggered": "codegate_check with path set to the absolute <FIXTURES>/syntax directory.",
-              "expected_behavior": "Return or explain the BLOCKED syntax result supported by the tool output. Do not create a commit or bypass the check."
-            },
-            {
-              "description": "Create the no-config fixture with review/fixtures.py. It is a Git repository without codegate.toml. This tests an actionable setup error within a supported workflow.",
-              "prompt": "Run the checks for <FIXTURES>/no-config.",
-              "tools_triggered": "codegate_check with path set to the absolute <FIXTURES>/no-config directory.",
-              "expected_behavior": "The tool reports that codegate.toml is missing. Explain that checks were not run and suggest the setup workflow; do not fabricate PASS."
-            },
-            {
-              "description": "Create the path with spaces fixture with review/fixtures.py. It contains the same valid test suite as pass and checks that absolute paths are passed without shell splitting.",
-              "prompt": "Run the quality checks for the repository at <FIXTURES>/path with spaces.",
-              "tools_triggered": "codegate_check with path set to the full absolute <FIXTURES>/path with spaces directory, as one string.",
-              "expected_behavior": "The tool returns isError false and a PASS report. Summarize that result for the correct repository, without splitting or changing the path."
-            }
-          ],
-          "negative": [
-            {
-              "description": "CodeGate checks local repositories and has no hosted deployment tool. Do not invoke codegate_check solely to deploy or claim deployment. Explain the limit and ask for a deployment-capable workflow.",
-              "prompt": "Deploy my production application to Vercel using CodeGate."
-            },
-            {
-              "description": "CodeGate has no payment, checkout or subscription tool. Do not invoke codegate_check to charge a card, purchase anything, or claim a paid subscription. Explain that CodeGate is free.",
-              "prompt": "Charge my card and upgrade me to CodeGate Pro."
-            },
-            {
-              "description": "No local path or mounted checkout is provided. CodeGate cannot enumerate private GitHub repositories through an account connection. Do not invoke codegate_check with invented local paths or claim a cloud account scan. Ask for an accessible local checkout.",
-              "prompt": "Scan every private repository in my GitHub organization without cloning anything locally."
-            }
-          ]
-        },
         "commerce": false,
-        "commerce_description": "CodeGate is free and has no purchases, subscriptions, checkout or paid-account requirement."
+        "commerce_description": "CodeGate does not sell products or process payments."
       }
     }
   }
