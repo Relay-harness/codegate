@@ -1,6 +1,6 @@
 {
   "name": "codegate",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Run configured repository checks on demand and install Git hooks per repository.",
   "author": {
     "name": "Sathwik R",
@@ -20,7 +20,7 @@
   "interface": {
     "displayName": "CodeGate",
     "shortDescription": "Checks before code ships",
-    "longDescription": "CodeGate runs the tests, lint and type checks declared in codegate.toml for a local Git repository and reports what failed. Set up repositories individually, run checks on demand, and use Git hooks to check ordinary commits and pushes. Requires Python 3.11+ and a local desktop Codex thread with repository access. No API key or paid account is required. Configured commands run with your local permissions and can access the network. A passing check does not prove the code is bug-free, and local hooks can be bypassed; use required CI checks for server-side enforcement.",
+    "longDescription": "CodeGate runs the tests, lint and type checks declared in codegate.toml for a local Git repository and reports what failed. Set up repositories individually, run checks on demand, and use Git hooks to check ordinary commits and pushes. Requires Python 3.11+ and a local desktop Codex thread with repository access. Configured commands run with your local permissions and can access the network. A passing check does not prove the code is bug-free, and local hooks can be bypassed; use required CI checks for server-side enforcement.",
     "developerName": "Sathwik R",
     "category": "Developer Tools",
     "capabilities": [],
