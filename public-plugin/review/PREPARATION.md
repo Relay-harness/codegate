@@ -1,6 +1,6 @@
 # Public submission preparation
 
-Status: draft only; not uploaded, submitted, approved, or public.
+Status: uploaded to the OpenAI submission portal as a draft; not submitted for review or published. Developer identity is verified. The portal reports a blocking local command-line MCP finding that requires OpenAI representative action.
 
 Creator-confirmed publication choices: free with no purchases, all available countries, and local-MCP submission approval already obtained. The saved plugin's publisher name is Sathwik R; the exact verified organization and identity still need to be checked in the portal.
 
@@ -52,3 +52,9 @@ The source includes five positive and three negative review cases, release notes
 - Terms: https://relay-harness.github.io/codegate/terms.html
 
 No Relay policy is used. Both pages were verified after successful GitHub Pages deployment.
+
+## Portal validation
+
+The portal accepted the package and imported the CodeGate listing, developer identity, skills and policy URLs. Its blocking finding is: “Command MCP Server detected: We recommend using MCP servers with an URL. Please contact your OpenAI representative to submit plugins with command line MCPs.” Do not remove the MCP server or change its transport merely to bypass this gate. The publisher must have the chosen submitting organization enabled for local MCP submissions.
+
+Version 0.1.2 removes redundant account language from the listing in response to the portal’s non-blocking pricing-language finding. No pricing offer is included. Portal review, skill-scan results, target-host validation and developer attestations must still be verified.
