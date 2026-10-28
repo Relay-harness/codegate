@@ -17,7 +17,7 @@ import sys
 import time
 import tomllib
 
-VERSION = "0.1.0"
+VERSION = "0.1.1"
 MARKER = "codegate-managed-v1"
 MAX_OUTPUT = 1_000_000
 MAX_INPUT_BYTES = 512 * 1024 * 1024
@@ -575,7 +575,7 @@ def mcp_server(path, require_path=False):
                 result = {}
             elif method == "tools/list":
                 where = "Required." if require_path else "Defaults to the server's working directory."
-                result = {"tools": [{"name": "codegate_check", "description": "Run a repository's configured CodeGate quality checks (codegate.toml). Executes project commands with host permissions; not a sandbox or proof of bug-free code.", "inputSchema": {"type": "object", "properties": {"path": {"type": "string", "description": "Absolute path inside the Git repository to check. " + where}}, "additionalProperties": False}}]}
+                result = {"tools": [{"name": "codegate_check", "description": "Run a repository's configured CodeGate quality checks (codegate.toml). Use when the user requests repository checks or before a shipping operation in an opted-in repository. Commands run with host permissions and inherited environment, may change files or use the network, and are not a sandbox or proof of bug-free code.", "inputSchema": {"type": "object", "properties": {"path": {"type": "string", "description": "Absolute path inside the Git repository to check. " + where}}, "additionalProperties": False}, "annotations": {"title": "Run configured repository checks", "readOnlyHint": False, "destructiveHint": True, "idempotentHint": False, "openWorldHint": True}}]}
             elif method == "tools/call":
                 params = request.get("params", {})
                 arguments = params.get("arguments") or {}

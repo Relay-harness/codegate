@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 In Codex, or anywhere `${CLAUDE_PLUGIN_ROOT}` is not expanded below, use `uvx --from git+https://github.com/Relay-harness/codegate.git codegate` in place of `"${CLAUDE_PLUGIN_ROOT}/scripts/codegate"`.
 
-The plugin already gates Claude's Bash commands in any repository that has a `codegate.toml`. This setup adds that file plus Git hooks, so plain `git commit` and `git push` are gated too.
+The plugin's Bash hook runs only in repositories with both `codegate.toml` and a local CodeGate install receipt. This setup creates that opt-in and adds Git hooks, so ordinary `git commit` and `git push` commands run the gate too.
 
 1. Confirm you are at the root of a Git repository (`git rev-parse --show-toplevel`). Stop and tell the user if not.
 

@@ -6,7 +6,7 @@
     {
       "name": "codegate",
       "source": "./",
-      "description": "Blocks commit, push and PR commands until the repository's configured checks pass.",
+      "description": "Runs configured checks before ordinary commit, push and PR commands in repositories opted in on this machine.",
       "category": "development"
     }
   ]

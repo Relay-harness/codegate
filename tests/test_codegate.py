@@ -262,6 +262,11 @@ class GateTests(unittest.TestCase):
         messages = [json.loads(line) for line in result.stdout.splitlines()]
         self.assertEqual(len(messages), 3)
         self.assertEqual(messages[1]["result"]["tools"][0]["name"], "codegate_check")
+        annotations = messages[1]["result"]["tools"][0]["annotations"]
+        self.assertEqual(annotations["title"], "Run configured repository checks")
+        self.assertFalse(annotations["readOnlyHint"])
+        self.assertTrue(annotations["destructiveHint"])
+        self.assertTrue(annotations["openWorldHint"])
         self.assertFalse(messages[2]["result"]["isError"])
 
     def test_modified_owned_hook_is_not_overwritten(self):

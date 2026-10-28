@@ -1,6 +1,6 @@
 {
   "name": "codegate",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Run your project's own tests, lint and type checks before Codex commits, pushes or opens a PR. Opt in per repository with codegate.toml.",
   "author": { "name": "CodeGate contributors", "url": "https://github.com/Relay-harness/codegate" },
   "homepage": "https://relay-harness.github.io/codegate/",
