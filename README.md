@@ -38,6 +38,14 @@ Plugins load in every project. The plugin hook (`codegate hook plugin`) therefor
 
 Then, in the repository you want to protect, run `/codegate:setup`. It runs `init --git`: it writes `codegate.toml`, vendors `.codegate/runner.py` and installs Git hooks. It skips `--claude`, because the plugin provides that hook. Use `/codegate:check` to run the gate on demand. After setup, `codegate doctor` reports `WARN Claude Bash hook installed`. That is expected when the hook comes from the plugin.
 
+Example prompts after installation:
+
+- "Set up CodeGate in this repository. Show me the detected check commands and generated configuration."
+- "Run CodeGate on this repository and explain any failing checks."
+- "The CodeGate hook blocked my commit. Diagnose the reported failure, fix it, and rerun the checks."
+
+CodeGate runs locally and needs Python 3.11+ and access to the repository. Review the configured commands before opting in: checks use your permissions and inherited environment, and may change files or access the network. Reports remain in the repository's Git metadata until you remove them. Tool results can include local paths and test output that your AI client receives. See the [CodeGate privacy policy](https://relay-harness.github.io/codegate/privacy.html), [terms](https://relay-harness.github.io/codegate/terms.html), and [support tracker](https://github.com/Relay-harness/codegate/issues).
+
 ### Codex and the ChatGPT desktop app
 
 ```bash
